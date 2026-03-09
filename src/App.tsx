@@ -3,6 +3,7 @@ import type { Venue } from './types/venue';
 import { SeatMap } from './components/SeatMap/SeatMap';
 import { Summary } from './components/Summary/Summary';
 import { Container, Row, Col, Button, Offcanvas, Badge, Spinner, Alert } from 'react-bootstrap';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 function App() {
   const [venue, setVenue] = useState<Venue | null>(null);
@@ -62,28 +63,35 @@ function App() {
   }
 
   return (
-    <div className="d-flex flex-column vh-100">
+    <div className="d-flex flex-column vh-100 bg-light">
       {/* Header */}
-      <nav className="navbar navbar-dark bg-primary px-3 py-2">
+      <nav className="navbar navbar-dark bg-primary px-3 py-2 flex-shrink-0">
         <div className="d-flex justify-content-between align-items-center w-100">
           <div>
-            <h1 className="h5 mb-1 text-white">{venue.name}</h1>
-            <div className="d-flex gap-2 flex-wrap">
+            <h1 className="h5 mb-0 text-white d-flex align-items-center gap-2">
+              <i className="bi bi-building"></i>
+              {venue.name}
+            </h1>
+            <div className="d-flex gap-2 flex-wrap mt-1">
               {venue.sections.map((section) => (
                 <Badge key={section.id} bg="light" text="dark" className="px-2 py-1">
-                  {section.label}: {section.rows.reduce((acc, row) => acc + row.seats.length, 0)} seats
+                  {section.label}
                 </Badge>
               ))}
             </div>
           </div>
           <div className="d-flex align-items-center gap-3">
-            <span className="text-white-50 d-none d-md-inline">{venue.venueId}</span>
+            <span className="text-white-50 d-none d-md-inline">
+              <i className="bi bi-tag me-1"></i>
+              {venue.venueId}
+            </span>
             <Button 
               variant="outline-light" 
               size="sm"
               className="d-md-none"
               onClick={handleShowSummary}
             >
+              <i className="bi bi-ticket me-1"></i>
               Summary
             </Button>
           </div>
@@ -91,17 +99,13 @@ function App() {
       </nav>
 
       {/* Main Content */}
-      <div className="flex-grow-1 overflow-hidden bg-light">
+      <div className="flex-grow-1 overflow-hidden">
         <Container fluid className="h-100 py-3">
           <Row className="h-100 g-3">
             {/* Seat Map */}
             <Col md={8} lg={9} className="h-100">
-              <div className="bg-white rounded-3 shadow-sm h-100 d-flex flex-column overflow-hidden">
-                <div className="p-3 border-bottom bg-light">
-                  <h6 className="mb-1 fw-bold">Interactive Seat Map</h6>
-                  <small className="text-muted">Click on available seats to select (max 8)</small>
-                </div>
-                <div className="flex-grow-1 p-3 overflow-auto d-flex justify-content-center align-items-start">
+              <div className="bg-white rounded-4 shadow-sm h-100 overflow-hidden d-flex flex-column">
+                <div className="flex-grow-1 overflow-auto">
                   <SeatMap venue={venue} />
                 </div>
               </div>
@@ -109,7 +113,7 @@ function App() {
 
             {/* Desktop Summary */}
             <Col md={4} lg={3} className="h-100 d-none d-md-block">
-              <div className="bg-white rounded-3 shadow-sm h-100 overflow-auto p-3">
+              <div className="bg-white rounded-4 shadow-sm h-100 overflow-auto p-3">
                 <Summary />
               </div>
             </Col>
@@ -126,7 +130,10 @@ function App() {
         style={{ height: 'auto', maxHeight: '85vh' }}
       >
         <Offcanvas.Header closeButton className="bg-light">
-          <Offcanvas.Title>Your Selection</Offcanvas.Title>
+          <Offcanvas.Title>
+            <i className="bi bi-ticket me-2"></i>
+            Your Selection
+          </Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body className="p-3">
           <Summary />
