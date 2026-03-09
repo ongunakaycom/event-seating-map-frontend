@@ -25,13 +25,12 @@ const BREAKPOINTS = {
   TABLET: 992
 } as const;
 
-// Price configuration
+// Price configuration - Updated to match image: Tier 2 = $60
 const PRICE_TIERS = {
-  1: 50, // Standard
-  2: 75, // Premium
-  3: 100 // VIP
+  1: 50, // Standard - Lower Bowl C, D
+  2: 60, // Premium - Lower Bowl B  
+  3: 75  // VIP - Lower Bowl A
 } as const;
-
 export const SeatMap: FC<SeatMapProps> = ({ venue }) => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [selectedSeatDetail, setSelectedSeatDetail] = useState<SeatDetail | null>(null);

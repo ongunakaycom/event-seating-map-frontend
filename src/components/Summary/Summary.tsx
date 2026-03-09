@@ -6,10 +6,29 @@ export const Summary: FC = () => {
   const { selectedSeats, maxSeats, clearSeats, getSelectedCount } = useSeatStore();
   const selectedCount = getSelectedCount();
 
+  // Price tiers matching SeatMap component
+  const PRICE_TIERS = {
+    1: 50, // Standard - Lower Bowl C, D
+    2: 60, // Premium - Lower Bowl B  
+    3: 75  // VIP - Lower Bowl A
+  } as const;
+
+  // Extract price tier from seat ID (assuming format like "A-1-01" where first part indicates section)
+  const getPriceTierFromSeatId = (seatId: string): number => {
+    const sectionPrefix = seatId.charAt(0);
+    // Map section prefixes to price tiers
+    switch(sectionPrefix) {
+      case 'A': return 3; // VIP
+      case 'B': return 2; // Premium
+      case 'C': return 1; // Standard
+      case 'D': return 1; // Standard
+      default: return 1;
+    }
+  };
+
   const calculatePrice = (seatId: string) => {
-    const basePrice = 50;
-    const seatNumber = parseInt(seatId.split('-').pop() || '0');
-    return basePrice + (seatNumber % 3) * 10;
+    const tier = getPriceTierFromSeatId(seatId);
+    return PRICE_TIERS[tier as keyof typeof PRICE_TIERS] || PRICE_TIERS[1];
   };
 
   const totalPrice = selectedSeats.reduce((sum, seat) => sum + calculatePrice(seat), 0);
