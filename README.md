@@ -6,7 +6,7 @@ A modern, responsive React + TypeScript application for interactive event seat s
 
 ## 📸 Preview
 
-![Seat Map Preview](public/vite.svg)  
+![Seat Map Preview](public/vite.png)  
 > Clean, intuitive seat selection interface powered by React, Bootstrap 5, and Zustand.
 
 ---
