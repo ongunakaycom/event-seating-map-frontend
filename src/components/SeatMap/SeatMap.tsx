@@ -1,6 +1,7 @@
 import type { FC } from 'react';
 import type { Venue, Section, Seat } from '../../types/venue';
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { List, AutoSizer } from 'react-virtualized';
 import { useSeatStore } from '../../store/useSeatStore';
 import { Badge } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -181,9 +182,6 @@ export const SeatMap: FC<SeatMapProps> = React.memo(({ venue }) => {
     }
   }, [selectedSeatDetail, handleSeatClick]);
 
-  // FIXED: Remove this function entirely and inline the button rendering
-  // This eliminates the type propagation issue
-
   const {
     isMobile,
     seatSize,
@@ -239,86 +237,79 @@ export const SeatMap: FC<SeatMapProps> = React.memo(({ venue }) => {
 
               {/* Row'lar */}
               <div className="p-2 p-md-3">
-                {section.rows.map((row) => {
-                  // Convert once at the row level
-                  const rowIndexStr = String(row.index);
-                  
-                  return (
-                    <div key={rowIndexStr} className="mb-3">
-                      <div className="d-flex align-items-center gap-2 mb-2">
-                        <span style={{ fontSize: fontSize }} className="text-secondary fw-semibold">
-                          Row {rowIndexStr}
-                        </span>
-                        <div className="flex-grow-1" style={{ height: '1px', background: '#e9ecef' }}></div>
-                      </div>
-                      
-                      {/* Koltuklar - flex-wrap ile responsive */}
-                      <div className="d-flex flex-wrap" style={{ gap: `${gap}px` }}>
-                        {row.seats.map((seat) => {
-                          const selected = isSelected(seat.id);
-                          const isAvailable = seat.status === 'available';
-                          const isClickable = isAvailable || selected;
+              <AutoSizer disableWidth>
+                {({ height }) => (
+                  <List
+                    width={sectionWidth === '100%' ? windowWidth : 600} // approximate width
+                    height={height}
+                    rowCount={section.rows.length}
+                    rowHeight={seatSize + gap * 2 + 30} // approximate row height with header
+                    rowRenderer={({ key, index, style }) => {
+                      const row = section.rows[index];
+                      const rowIndexStr = String(row.index);
+                      return (
+                        <div key={key} style={style} className="mb-3">
+                          <div className="d-flex align-items-center gap-2 mb-2">
+                            <span style={{ fontSize: fontSize }} className="text-secondary fw-semibold">
+                              Row {rowIndexStr}
+                            </span>
+                            <div className="flex-grow-1" style={{ height: '1px', background: '#e9ecef' }}></div>
+                          </div>
 
-                          // FIXED: Inline the button rendering to avoid type propagation issues
-                          return (
-                            <button
-                              key={seat.id}
-                              className={`btn p-0 border-0 ${isClickable ? 'opacity-100' : 'opacity-50'}`}
-                              style={{ 
-                                width: seatSize, 
-                                height: seatSize,
-                                transform: 'scale(1)',
-                                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                                cursor: isClickable ? 'pointer' : 'not-allowed'
-                              }}
-                              onClick={() => handleSeatClick(
-                                seat.id, 
-                                seat.status, 
-                                section.label, 
-                                rowIndexStr, // Use the string version
-                                seat.col
-                              )}
-                              onMouseEnter={(e) => {
-                                if (isClickable && !isMobile) {
-                                  e.currentTarget.style.transform = 'scale(1.15)';
-                                }
-                              }}
-                              onMouseLeave={(e) => {
-                                if (isClickable && !isMobile) {
-                                  e.currentTarget.style.transform = 'scale(1)';
-                                }
-                              }}
-                              title={`${section.label} - Row ${rowIndexStr} - Seat ${seat.col}`}
-                              aria-label={`${section.label} Row ${rowIndexStr} Seat ${seat.col} ${seat.status} ${selected ? 'selected' : ''}`}
-                              aria-pressed={selected}
-                              tabIndex={isClickable ? 0 : -1}
-                              onKeyDown={(e) => {
-                                if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
-                                  e.preventDefault();
-                                  handleSeatClick(
+                          <div className="d-flex flex-wrap" style={{ gap: `${gap}px` }}>
+                            {row.seats.map((seat) => {
+                              const selected = isSelected(seat.id);
+                              const isAvailable = seat.status === 'available';
+                              const isClickable = isAvailable || selected;
+                              return (
+                                <button
+                                  key={seat.id}
+                                  className={`btn p-0 border-0 ${isClickable ? 'opacity-100' : 'opacity-50'}`}
+                                  style={{ 
+                                    width: seatSize, 
+                                    height: seatSize,
+                                    transform: 'scale(1)',
+                                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    cursor: isClickable ? 'pointer' : 'not-allowed'
+                                  }}
+                                  onClick={() => handleSeatClick(
                                     seat.id, 
                                     seat.status, 
                                     section.label, 
-                                    rowIndexStr, // Use the string version
+                                    rowIndexStr,
                                     seat.col
-                                  );
-                                }
-                              }}
-                            >
-                              <i 
-                                className={getSeatIcon(seat.status, selected)}
-                                style={{ 
-                                  fontSize: seatSize,
-                                  filter: selected ? 'drop-shadow(0 2px 4px rgba(13,110,253,0.3))' : 'none'
-                                }}
-                              ></i>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
+                                  )}
+                                  onMouseEnter={(e) => {
+                                    if (isClickable && !isMobile) e.currentTarget.style.transform = 'scale(1.15)';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    if (isClickable && !isMobile) e.currentTarget.style.transform = 'scale(1)';
+                                  }}
+                                  title={`${section.label} - Row ${rowIndexStr} - Seat ${seat.col}`}
+                                  aria-label={`${section.label} Row ${rowIndexStr} Seat ${seat.col} ${seat.status} ${selected ? 'selected' : ''}`}
+                                  aria-pressed={selected}
+                                  tabIndex={isClickable ? 0 : -1}
+                                  onKeyDown={(e) => {
+                                    if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
+                                      e.preventDefault();
+                                      handleSeatClick(seat.id, seat.status, section.label, rowIndexStr, seat.col);
+                                    }
+                                  }}
+                                >
+                                  <i 
+                                    className={getSeatIcon(seat.status, selected)}
+                                    style={{ fontSize: seatSize, filter: selected ? 'drop-shadow(0 2px 4px rgba(13,110,253,0.3))' : 'none' }}
+                                  ></i>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    }}
+                  />
+                )}
+              </AutoSizer>
               </div>
             </div>
           ))}
