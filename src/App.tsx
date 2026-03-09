@@ -11,6 +11,21 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [showSummary, setShowSummary] = useState(false);
 
+  // Global keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        // Close mobile summary if open
+        if (showSummary) {
+          setShowSummary(false);
+        }
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showSummary]); // Add showSummary to dependencies
+
   useEffect(() => {
     fetch('/data/venue.json')
       .then((res) => {
@@ -90,9 +105,13 @@ function App() {
               size="sm"
               className="d-md-none"
               onClick={handleShowSummary}
+              aria-label="Open summary panel"
+              aria-expanded={showSummary}
+              aria-controls="mobile-summary-offcanvas"
             >
               <i className="bi bi-ticket me-1"></i>
               Summary
+              {showSummary && <span className="visually-hidden">(open)</span>}
             </Button>
           </div>
         </div>
@@ -123,14 +142,26 @@ function App() {
 
       {/* Mobile Summary Offcanvas */}
       <Offcanvas 
+        id="mobile-summary-offcanvas"
         show={showSummary} 
         onHide={handleCloseSummary} 
         placement="bottom"
         className="rounded-top-4"
         style={{ height: 'auto', maxHeight: '85vh' }}
+        restoreFocus={true}
+        restoreFocusOptions={{
+          preventScroll: true
+        }}
+        onEntered={() => {
+          // Focus the close button when offcanvas opens
+          const closeButton = document.querySelector('.offcanvas .btn-close') as HTMLButtonElement;
+          if (closeButton) {
+            closeButton.focus();
+          }
+        }}
       >
         <Offcanvas.Header closeButton className="bg-light">
-          <Offcanvas.Title>
+          <Offcanvas.Title id="offcanvas-summary-label">
             <i className="bi bi-ticket me-2"></i>
             Your Selection
           </Offcanvas.Title>

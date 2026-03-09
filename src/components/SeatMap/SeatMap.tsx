@@ -55,6 +55,7 @@ export const SeatMap: FC<SeatMapProps> = ({ venue }) => {
   };
 
   // Responsive boyutlar
+  // Responsive boyutlar
   const isMobile = windowWidth < 768;
   const isTablet = windowWidth >= 768 && windowWidth < 992;
   
@@ -64,7 +65,32 @@ export const SeatMap: FC<SeatMapProps> = ({ venue }) => {
   const headerFontSize = isMobile ? 16 : isTablet ? 15 : 14;
   const gap = isMobile ? 12 : 16;
 
-  // Section'ları 2 kolonlu yerleştir
+  // Price tier'a göre fiyat hesaplama
+  const getPriceByTier = (tier: number) => {
+    switch(tier) {
+      case 1: return 50; // Standard
+      case 2: return 75; // Premium
+      case 3: return 100; // VIP
+      default: return 50;
+    }
+  };
+
+  // Seat ID'den koltuk bulma fonksiyonu
+  const findSeatById = (seatId: string) => {
+    for (const section of venue.sections) {
+      for (const row of section.rows) {
+        const seat = row.seats.find(s => s.id === seatId);
+        if (seat) return seat;
+      }
+    }
+    return null;
+  };
+
+  // Subtotal hesaplama
+  const subtotal = selectedSeats.reduce((total, seatId) => {
+    const seat = findSeatById(seatId);
+    return total + (seat ? getPriceByTier(seat.priceTier) : 0);
+  }, 0);
 
   return (
     <div className="seat-map-container w-100 h-100 overflow-auto">
@@ -146,6 +172,15 @@ export const SeatMap: FC<SeatMapProps> = ({ venue }) => {
                               }
                             }}
                             title={`${section.label} - Row ${row.index} - Seat ${seat.col}`}
+                            aria-label={`${section.label} Row ${row.index} Seat ${seat.col} ${seat.status} ${selected ? 'selected' : ''}`}
+                            aria-pressed={selected}
+                            tabIndex={isClickable ? 0 : -1}
+                            onKeyDown={(e) => {
+                              if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
+                                e.preventDefault();
+                                handleSeatClick(seat.id, seat.status);
+                              }
+                            }}
                           >
                             <i 
                               className={getSeatIcon(seat.status, selected)}
@@ -166,6 +201,7 @@ export const SeatMap: FC<SeatMapProps> = ({ venue }) => {
         </div>
 
         {/* Legend ve Info panel - yan yana desktop'ta */}
+        {/* Legend, Subtotal ve Info panel - yan yana desktop'ta */}
         <div className="d-flex flex-wrap mt-4" style={{ gap: `${gap}px` }}>
           {/* Legend */}
           <div
@@ -203,6 +239,55 @@ export const SeatMap: FC<SeatMapProps> = ({ venue }) => {
                 <span style={{ fontSize: fontSize }}>Held</span>
               </div>
             </div>
+          </div>
+
+          {/* Subtotal Panel - YENİ */}
+          <div
+            className="bg-white rounded-3 shadow-sm p-3"
+            style={{
+              flex: '1 1 auto',
+              minWidth: isMobile ? '100%' : '250px',
+              border: '1px solid #dee2e6'
+            }}
+          >
+            <h6 style={{ fontSize: headerFontSize }} className="fw-bold mb-3 d-flex align-items-center gap-2">
+              <i className="bi bi-cart3 text-primary"></i>
+              Your Selection
+            </h6>
+            
+            <div className="mb-3">
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <span style={{ fontSize: fontSize }}>Selected Seats:</span>
+                <span className="fw-bold" style={{ fontSize: fontSize }}>{selectedSeats.length} / {maxSeats}</span>
+              </div>
+              
+              {/* Subtotal */}
+              <div className="d-flex justify-content-between align-items-center pt-2 border-top">
+                <span className="fw-semibold" style={{ fontSize: fontSize }}>Subtotal:</span>
+                <span className="fw-bold text-primary" style={{ fontSize: fontSize + 2 }}>${subtotal.toFixed(2)}</span>
+              </div>
+            </div>
+            
+            {/* Selected seats list (collapsible if many) */}
+            {selectedSeats.length > 0 && (
+              <div className="mt-2">
+                <details>
+                  <summary className="small text-muted" style={{ fontSize: fontSize - 1 }}>
+                    View selected seats ({selectedSeats.length})
+                  </summary>
+                  <div className="d-flex flex-wrap gap-1 mt-2">
+                    {selectedSeats.map(seatId => {
+                      const seat = findSeatById(seatId);
+                      return seat ? (
+                        <Badge key={seatId} bg="light" text="dark" className="p-1" style={{ fontSize: fontSize - 2 }}>
+                          {seatId} (${getPriceByTier(seat.priceTier)})
+                        </Badge>
+                      ) : null;
+                    })}
+                  </div>
+                </details>
+              </div>
+            )}
           </div>
 
           {/* Info panel */}
