@@ -89,10 +89,6 @@ A modern, responsive React + TypeScript application for interactive event seat s
 ## 📦 Installation & Setup
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/event-seating-map-frontend.git
-cd event-seating-map-frontend
-
 # Install dependencies
 pnpm install
 
