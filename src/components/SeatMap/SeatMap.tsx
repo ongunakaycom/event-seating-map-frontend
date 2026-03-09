@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSeatStore } from '../../store/useSeatStore';
 import { Badge } from 'react-bootstrap';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import React from 'react';
 
 interface SeatMapProps {
   venue: Venue;
@@ -31,7 +32,7 @@ const PRICE_TIERS = {
   2: 60, // Premium - Lower Bowl B  
   3: 75  // VIP - Lower Bowl A
 } as const;
-export const SeatMap: FC<SeatMapProps> = ({ venue }) => {
+export const SeatMap: FC<SeatMapProps> = React.memo(({ venue }) => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [selectedSeatDetail, setSelectedSeatDetail] = useState<SeatDetail | null>(null);
   const [showSeatModal, setShowSeatModal] = useState(false);
@@ -525,4 +526,4 @@ export const SeatMap: FC<SeatMapProps> = ({ venue }) => {
       )}
     </div>
   );
-};
+});
