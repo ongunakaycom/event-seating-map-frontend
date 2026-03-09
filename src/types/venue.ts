@@ -43,7 +43,7 @@ export interface PriceTier {
 }
 
 export const PRICE_TIERS: PriceTier[] = [
-  { id: 1, price: 50, color: '#4caf50', label: 'Standard' },
-  { id: 2, price: 75, color: '#2196f3', label: 'Premium' },
-  { id: 3, price: 100, color: '#9c27b0', label: 'VIP' },
+  { id: 1, price: 50, color: '#4caf50', label: 'Standard' },   // Tier 1: $50 - Lower Bowl C, D
+  { id: 2, price: 60, color: '#2196f3', label: 'Premium' },    // Tier 2: $60 - Lower Bowl B
+  { id: 3, price: 75, color: '#9c27b0', label: 'VIP' },        // Tier 3: $75 - Lower Bowl A
 ];
