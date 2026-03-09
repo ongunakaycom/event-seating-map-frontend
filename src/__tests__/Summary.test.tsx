@@ -9,7 +9,6 @@ vi.mock('../store/useSeatStore', () => ({
   useSeatStore: vi.fn()
 }));
 
-// Tip tanımı ekleyelim
 interface MockStore {
   selectedSeats: string[];
   maxSeats: number;
@@ -19,7 +18,6 @@ interface MockStore {
 }
 
 describe('Summary Component', () => {
-  // Tipi açıkça belirtiyoruz
   const mockStore: MockStore = {
     selectedSeats: [],
     maxSeats: 8,
@@ -80,7 +78,9 @@ describe('Summary Component', () => {
   });
 
   it('shows warning when max seats reached', () => {
-    mockStore.selectedSeats = Array(8).fill('A-1-01');
+    // Farklı ID'ler oluştur
+    const seats = Array.from({ length: 8 }, (_, i) => `A-1-${(i + 1).toString().padStart(2, '0')}`);
+    mockStore.selectedSeats = seats;
     mockStore.getSelectedCount.mockReturnValue(8);
     
     render(<Summary />);
