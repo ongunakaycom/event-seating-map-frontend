@@ -1,73 +1,73 @@
-# React + TypeScript + Vite
+# Interactive Event Seating Map
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive React + TypeScript application for interactive event seat selection. Users can view venue seating layouts, select up to 8 seats, and see real-time pricing updates.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Core Requirements ✅
+- **Interactive Seat Map**: Render venue seats with absolute coordinates from JSON data
+- **Seat Selection**: Click or keyboard (Enter/Space) to select/deselect available seats
+- **8 Seat Limit**: Maximum 8 seats per selection with visual feedback
+- **Live Summary**: Real-time subtotal calculation with price tiers
+- **Persistence**: Selected seats persist after page reload (localStorage)
+- **Accessibility**: ARIA labels, keyboard navigation, focus management
+- **Responsive Design**: Optimized for mobile, tablet, and desktop
 
-## React Compiler
+### Additional Features ✨
+- **Seat Details Modal**: Click any seat to view section, row, seat number, price tier, and status
+- **Price Tiers**:
+  - Tier 1 (Standard): $50 - Lower Bowl C, D
+  - Tier 2 (Premium): $60 - Lower Bowl B
+  - Tier 3 (VIP): $75 - Lower Bowl A
+- **Responsive Layout**:
+  - Mobile (<768px): Single column, large icons (32px)
+  - Tablet (768-992px): 2 columns, medium icons (26px)
+  - Desktop (>992px): 2 columns, small icons (24px)
+- **Mobile Offcanvas**: Summary slides from bottom on mobile devices
+- **Status Legend**: Color-coded seat status (Available, Selected, Reserved, Sold, Held)
+- **Keyboard Shortcuts**: Escape to close mobile summary
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🏗️ Architecture Choices
 
-## Expanding the ESLint configuration
+### Technology Stack
+- **React 18**: Component-based UI architecture
+- **TypeScript** (`strict: true`): Type safety and better developer experience
+- **Vite**: Fast development server and optimized builds
+- **Zustand**: Lightweight state management with localStorage persistence
+- **Bootstrap 5**: Responsive grid system and utility classes
+- **Bootstrap Icons**: Modern icon set for seat visualization
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Key Design Decisions
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. **State Management (Zustand)**
+   - Simple API with minimal boilerplate
+   - Built-in persistence middleware for localStorage
+   - Centralized seat selection logic
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+2. **Component Structure**
+   - `SeatMap`: Renders venue sections and seats with responsive grid
+   - `Summary`: Displays selected seats and pricing
+   - Clean separation of concerns with custom hooks
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+3. **Responsive Strategy**
+   - Mobile-first approach with breakpoint constants
+   - Dynamic icon sizing based on viewport
+   - Flexbox grid system for 2-column layout on desktop
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+4. **Performance Optimizations**
+   - `useMemo`/`useCallback` for expensive calculations
+   - React.memo for preventing unnecessary re-renders
+   - Responsive scaling without layout shifts
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 📦 Installation & Setup
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/event-seating-map-frontend.git
+cd event-seating-map-frontend
+
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
