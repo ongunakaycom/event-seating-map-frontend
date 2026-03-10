@@ -147,7 +147,7 @@ export const SeatMap: FC<SeatMapProps> = React.memo(({ venue }) => {
     }
   }, []);
 
-  // Subtotal hesaplama
+
   const subtotal = useMemo(() => {
     return selectedSeats.reduce((total, seatId) => {
       const seat = findSeatById(seatId);
