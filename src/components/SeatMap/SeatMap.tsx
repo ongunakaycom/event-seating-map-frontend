@@ -65,12 +65,11 @@ export const SeatMap: FC<SeatMapProps> = React.memo(({ venue }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Price tier'a göre fiyat hesaplama
+
   const getPriceByTier = useCallback((tier: number): number => {
     return PRICE_TIERS[tier as keyof typeof PRICE_TIERS] || PRICE_TIERS[1];
   }, []);
 
-  // Seat ID'den koltuk bulma fonksiyonu
   const findSeatById = useCallback((seatId: string): Seat | null => {
     for (const section of venue.sections) {
       for (const row of section.rows) {
