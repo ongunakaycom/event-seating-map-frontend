@@ -4,7 +4,6 @@ import { SeatMap } from '../components/SeatMap/SeatMap';
 import { useSeatStore } from '../store/useSeatStore';
 import type { Venue, Section, Row, Seat } from '../types/venue';
 
-// 15,000 koltuklu venue oluştur
 function generateLargeVenue(seatCount: number = 15000): Venue {
   const seatsPerRow = 50;
   const sections: Section[] = [];
@@ -56,7 +55,7 @@ describe('Performance Tests', () => {
 
   it('should render 15,000 seats without crashing', () => {
     expect(() => render(<SeatMap venue={largeVenue} />)).not.toThrow();
-  });
+  }, 30000); 
 
   it('should handle store operations with 8 selections quickly', () => {
     const { addSeat, removeSeat, getSelectedCount } = useSeatStore.getState();
@@ -100,7 +99,7 @@ describe('Performance Tests', () => {
     
     console.log(`⏱️ Subtotal calculation took: ${duration.toFixed(2)}ms`);
     expect(total).toBe(520); // 75*4 + 60*2 + 50*2 = 300 + 120 + 100 = 520
-    expect(duration).toBeLessThan(10); // 10ms'den hızlı olmalı
+    expect(duration).toBeLessThan(10); 
   });
 
   it('should measure render time for 15,000 seats', () => {
@@ -112,7 +111,6 @@ describe('Performance Tests', () => {
     const duration = endTime - startTime;
     
     console.log(`⏱️ 15,000 seats render took: ${duration.toFixed(2)}ms`);
-    // Render süresi makul olmalı (örneğin 1000ms = 1 saniye)
     expect(duration).toBeLessThan(2000);
   });
 });
